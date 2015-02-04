@@ -42,8 +42,9 @@ void freePacket(star_packet* packet) {
 }
 
 char* packetString(star_packet* packet) {
-   // Create room for a string 
-   char* asciiPacket = malloc(HEADER_SIZE + packet->data_len + packet->identifier_len);
+   // Create room for a string terminated by a cr
+   int packetLen = HEADER_SIZE + packet->data_len + packet->identifier_len + 1;
+   char* asciiPacket = malloc(packetLen);
    char cr = 13;
    char asterisk = '*';
    int index = 0;
@@ -68,6 +69,9 @@ char* packetString(star_packet* packet) {
    index += packet->identifier_len;
    memcpy(asciiPacket + index, packet->data, packet->data_len);
    debug("Inserting data at %d", index);
+
+   // Don't forget the <cr> terminator
+   memcpy(asciiPacket + packetLen, &cr, 1);
 
    return asciiPacket;
 }
