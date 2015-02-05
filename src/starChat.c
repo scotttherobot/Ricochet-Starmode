@@ -19,7 +19,7 @@
 int main(int argc, char* argv[]) {
    // Open the serial port
    int serialPort;
-   serialPort = open(argv[1], O_RDWR | O_NONBLOCK | O_NDELAY);
+   serialPort = open(argv[1], O_RDWR | O_NOCTTY);
    if (serialPort == -1) {
       perror("Error opening port");
       exit(-1);
@@ -49,22 +49,49 @@ void initRadio(int serialPort) {
 
    // Our init string. Turn off local echo.
    char* ate = "ate0\r";
+   char* starmode = "atdt**starmode\r";
+   char* escape = "+++";
 
    memset(buf, '\0', sizeof buf);
    // Disable Command echo ate0
    // We can use write() and read() here
    // prototype(int target, char* src, int nBytes)
+   debug("Initializing with %s", ate);
    write(serialPort, ate, strlen(ate));
-
    readBytes = read(serialPort, buf, sizeof buf);
    debug("Got %d bytes: %s back", readBytes, buf);
 
-   close(serialPort);
-
    // Enter Starmode
-   //write(serialPort, "atdt**starmode\r", 15);
+   debug("Entering starmode with %s", starmode);
+   write(serialPort, starmode, strlen(starmode));
+   // Starmode doesn't return anything
+   /*
+   memset(buf, '\0', sizeof buf);
+   readBytes = read(serialPort, buf, sizeof buf);
+   debug("Got %d bytes: %s back", readBytes, buf);
+   */
+
+   // Try sending a packet
+   debug("Sending at~la");
+   star_packet* p = allocPacket("", "&COMMAND", "at~la");
+   char* pstr = packetString(p);
+   debug("Sending %s", pstr);
+   write(serialPort, pstr, strlen(pstr));
+   memset(buf, '\0', sizeof buf);
+   while (readBytes = read(serialPort, buf, sizeof buf)) {
+      debug("Got %d bytes: %s back", readBytes, buf);
+   }
+
+   // leave Starmode
+   memset(buf, '\0', sizeof buf);
+   debug("Leaving starmode with %s", escape);
+   write(serialPort, escape, strlen(escape));
+   readBytes = read(serialPort, buf, sizeof buf);
+   debug("Got %d bytes: %s back", readBytes, buf);
 
    // That's all she wrote
+   close(serialPort);
+
 }
 
 void sendPacket(int serialPort, star_packet* packet) {
