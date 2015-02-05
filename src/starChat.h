@@ -6,3 +6,4 @@
 
 void handlePacketString(char* packetString);
 void initRadio(int serialPort);
+void sendPacket(int serialPort, star_packet* packet);
