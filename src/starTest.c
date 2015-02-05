@@ -13,6 +13,7 @@ int main(int argc, char* argv[]) {
 
    char* asciiPacket;
    star_packet* parsedPacket;
+   char type;
 
    // Alloc a packet
    star_packet* packet = allocPacket("SRVA", "01-2345-6789", "Hello, world!");
@@ -34,6 +35,10 @@ int main(int argc, char* argv[]) {
    printf("ID is %s\n", parsedPacket->identifier);
    printf("Source is %s\n", parsedPacket->host);
    printf("Data is %s\n", parsedPacket->data);
+
+   type = verifyPacketType(parsedPacket, "SRV");
+   printf("Type is %c\n", type);
+
 
    // Free it
    freePacket(packet);

@@ -63,6 +63,8 @@ void freePacket(star_packet* packet);
 char* packetString(star_packet* packet);
 // Convert a packet string to packet.
 star_packet* parsePacketString(char* packetString);
+// Verify the packet identifier.
+char verifyPacketType(star_packet* packet, char* identifier);
 
 // Misc helpers
 

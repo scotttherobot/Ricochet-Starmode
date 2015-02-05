@@ -126,3 +126,19 @@ star_packet* parsePacketString(char* packetString) {
 
    return packet;
 }
+
+char verifyPacketType(star_packet* packet, char* identifier) {
+   char* id = malloc(sizeof(char) * 4);
+   char type = packet->identifier[3];
+
+   // Copy the identifier string and cut off the last char
+   memcpy(id, packet->identifier, 4);
+   id[3] = '\0';
+  
+   if (strcmp(id, identifier) == 0) {
+      debug("It's one of our packets.");
+      return type;
+   }
+   debug("It's not one of our packets.");
+   return -1;
+}
