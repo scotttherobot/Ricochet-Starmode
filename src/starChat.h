@@ -4,5 +4,5 @@
  * Scott Vanderlind
  */
 
-void parsePacketString(char* packetString);
+void handlePacketString(char* packetString);
 void initRadio(int serialPort);

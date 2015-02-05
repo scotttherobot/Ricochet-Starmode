@@ -4,6 +4,8 @@
  * Scott Vanderlind
  */
 
+#include "star_packet.h"
+
 int main(int argc, char* argv[]) {
    // Initialize a FD_SET
    // Configure the radio 
@@ -13,7 +15,7 @@ int main(int argc, char* argv[]) {
 
 }
 
-void parsePacketString(char* packetString) {
+void handlePacketString(char* packetString) {
    // Parse the string into a packet.
    star_packet* packet = parsePacketString(packetString);
    
