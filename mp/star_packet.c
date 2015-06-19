@@ -80,7 +80,7 @@ char* packetString(star_packet* packet) {
 
 int findSecondAsterisk(char* packetString) {
    int i, seen = 0;
-   for (i = 0; i < strlen(packetString); i++) {
+   for (i = 0; i < (int)strlen(packetString); i++) {
       if (packetString[i] == '*') {
          seen++;
          if (seen == 2) {

@@ -48,37 +48,36 @@ void watchPipe(int pipe) {
    fds[0].events = POLLIN;
    int len = 0;
    char *buf = (char *)calloc(BUF_SIZE, sizeof(char));
-   int num = 0;
+   star_packet* packet;
    printf("Listening on %d\n", pipe);
 
    while (1) {
-      num = poll(fds, 1, -1);
-      //printf("selected %d\n", num);
+      poll(fds, 1, -1);
       ioctl(pipe, FIONREAD, &len);
-      if (len > 0) {
-         printf("%d bytes availanle\n", len);
-         memset(buf, 0, BUF_SIZE);
-
-         len = read(pipe, buf, len);
-         printf("%d bytes read\n", len);
-         printf("got: %s\n", buf);
-      }
+      if (len == 0)
+         continue;
+      printf("%d bytes availanle\n", len);
+      memset(buf, 0, BUF_SIZE);
+      len = read(pipe, buf, sizeof(star_packet*));
+      printf("%d bytes read\n", len);
+      packet = (star_packet*)buf;
+      printf("%s\n", packetString(packet));
    }
 }
 
 void touchPipe(int pipe) {
    int i = 0;
-   int written = 0;
-   char* buf;
 
-   star_packet* packet = allocPacket("SRVA", "01-2345-6789", "Hello, world!");
-   buf = packetString(packet);
+   const char* id = "SRVA";
+   const char* host = "01-2345-6789";
+   const char* data = "Hello, world!";
+   static star_packet* packet = allocPacket((char*)id, (char*)host, (char*)data);
 
-   for (i = 0; i < 100; i++) {
-      written = write(pipe, buf, strlen(buf));
+   for (i = 0; i < 1; i++) {
+      printf("Sending packet: %s\n", packetString(packet));
+      write(pipe, packet, sizeof(star_packet*));
    }
 
-   freePacket(packet);
-   free(buf);
+   //freePacket(packet);
 }
 
