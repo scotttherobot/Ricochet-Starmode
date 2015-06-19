@@ -47,8 +47,7 @@ void watchPipe(int pipe) {
    fds[0].fd = pipe;
    fds[0].events = POLLIN;
    int len = 0;
-   char *buf = (char *)calloc(BUF_SIZE, sizeof(char));
-   star_packet* packet;
+   star_packet* packet = (star_packet*)calloc(1, sizeof(star_packet));
    printf("Listening on %d\n", pipe);
 
    while (1) {
@@ -57,11 +56,15 @@ void watchPipe(int pipe) {
       if (len == 0)
          continue;
       printf("%d bytes availanle\n", len);
-      memset(buf, 0, BUF_SIZE);
-      len = read(pipe, buf, sizeof(star_packet*));
+      len = read(pipe, packet, sizeof(star_packet));
       printf("%d bytes read\n", len);
-      packet = (star_packet*)buf;
-      printf("%s\n", packetString(packet));
+
+      printf("id len: %d\n", packet->identifier_len);
+      printf("id: %s\n", packet->identifier);
+      printf("host len: %d\n", packet->host_len);
+      printf("host: %s\n", packet->host);
+      printf("data len: %d\n", packet->data_len);
+      printf("data: %s\n", packet->data);
    }
 }
 
@@ -75,7 +78,7 @@ void touchPipe(int pipe) {
 
    for (i = 0; i < 1; i++) {
       printf("Sending packet: %s\n", packetString(packet));
-      write(pipe, packet, sizeof(star_packet*));
+      write(pipe, packet, sizeof(star_packet));
    }
 
    //freePacket(packet);
